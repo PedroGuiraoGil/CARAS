@@ -459,7 +459,7 @@
 <body>
     <div class="game-container">
         <h1>🎭 Reconocimiento de Emociones</h1>
-        <p class="subtitle">37 Emociones Científicamente Validadas</p>
+        <p class="subtitle">25 Emociones Científicamente Validadas</p>
         
         <!-- Pantalla de Menú -->
         <div id="menu-screen" class="menu-screen">
@@ -501,8 +501,8 @@
                 
                 <button class="difficulty-btn" style="background: linear-gradient(145deg, #FF6B6B, #EE5A24); box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);" onclick="startGame(6)">
                     <h3>🎭 Doble Cara</h3>
-                    <p>Todas las emociones</p>
-                    <p>2 imágenes • 12 opciones • Máximo reto</p>
+                    <p>25 emociones verificadas</p>
+                    <p>2 imágenes • 8 opciones • Mismo sentimiento</p>
                 </button>
                 
                 <button class="difficulty-btn" style="background: linear-gradient(145deg, #8E44AD, #6C3483); box-shadow: 0 5px 15px rgba(142, 68, 173, 0.4);" onclick="startGame(7)">
@@ -596,43 +596,31 @@
             13: {name: "Orgullo", level: 2},
             14: {name: "Vergüenza", level: 2},
             
-            // Nivel 3 - Avanzadas (15-24)
+            // Nivel 3 - Avanzadas (15-20)
             15: {name: "Serenidad", level: 3},
             16: {name: "Exasperación", level: 3},
             17: {name: "Nerviosismo", level: 3},
             18: {name: "Travesura", level: 3},
             19: {name: "Melancolía", level: 3},
             20: {name: "Escepticismo", level: 3},
-            21: {name: "Compasión", level: 3},
-            22: {name: "Gratitud", level: 3},
-            23: {name: "Nostalgia", level: 3},
-            24: {name: "Envidia", level: 3},
             
-            // Nivel 4 - Expertas (25-32)
+            // Nivel 4 - Expertas (24, 25, 27, 29-32)
+            24: {name: "Envidia", level: 4},
             25: {name: "Ironía", level: 4},
-            26: {name: "Ambivalencia", level: 4},
             27: {name: "Sarcasmo", level: 4},
-            28: {name: "Desdén", level: 4},
             29: {name: "Admiración", level: 4},
             30: {name: "Contemplación", level: 4},
             31: {name: "Hastío", level: 4},
-            32: {name: "Deseo", level: 4},
-            
-            // Nivel 5 - Científicas (33-37)
-            33: {name: "Culpa", level: 5},
-            34: {name: "Ansiedad", level: 5},
-            35: {name: "Alivio", level: 5},
-            36: {name: "Asombro", level: 5},
-            37: {name: "Horror", level: 5}
+            32: {name: "Deseo", level: 4}
         };
 
         const LEVELS = {
             1: {name: "Básico", emotions: [1,2,3,4,5,6], options: 4, questions: 10},
             2: {name: "Intermedio", emotions: [7,8,9,10,11,12,13,14], options: 6, questions: 12},
-            3: {name: "Avanzado", emotions: [15,16,17,18,19,20,21,22,23,24], options: 8, questions: 15},
-            4: {name: "Experto", emotions: [25,26,27,28,29,30,31,32], options: 10, questions: 12},
-            5: {name: "Científico", emotions: [33,34,35,36,37], options: 12, questions: 10},
-            6: {name: "Doble Cara", emotions: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37], options: 12, questions: 20, dualImages: true},
+            3: {name: "Avanzado", emotions: [15,16,17,18,19,20], options: 6, questions: 10},
+            4: {name: "Experto", emotions: [24,25,27,29,30,31,32], options: 7, questions: 10},
+            5: {name: "Científico", emotions: [1,2,3,4,5], options: 5, questions: 8},
+            6: {name: "Doble Cara", emotions: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,24,25,27,29,30,31,32], options: 8, questions: 15, dualImages: true},
             7: {name: "Encuentra la Pareja", emotions: [1,2,3,4,5,6,7,8], memoryGame: true}
         };
 
