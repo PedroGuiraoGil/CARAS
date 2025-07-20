@@ -158,6 +158,131 @@
             height: 250px;
         }
 
+        /* Estilos para el juego de memoria */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border-radius: 15px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            border: 3px solid transparent;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .memory-card.flipped {
+            background: white;
+            border-color: #667eea;
+        }
+
+        .memory-card.matched {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            border-color: #4CAF50;
+            cursor: default;
+            transform: none;
+        }
+
+        .memory-card.matched:hover {
+            transform: none;
+        }
+
+        .card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .card-front {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .memory-card.flipped .card-front {
+            opacity: 1;
+        }
+
+        .memory-card.flipped .card-back {
+            opacity: 0;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .card-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .memory-card.matched .card-label {
+            opacity: 1;
+        }
+
+        .match-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 20px 50px rgba(76, 175, 80, 0.6);
+            z-index: 1000;
+            animation: matchPopup 2s ease;
+            pointer-events: none;
+        }
+
+        @keyframes matchPopup {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+        }
+
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
@@ -304,7 +429,7 @@
             box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4);
         }
 
-            @media (max-width: 768px) {
+        @media (max-width: 768px) {
             .game-container {
                 padding: 20px;
                 margin: 10px;
@@ -379,6 +504,12 @@
                     <p>Todas las emociones</p>
                     <p>2 imágenes • 12 opciones • Máximo reto</p>
                 </button>
+                
+                <button class="difficulty-btn" style="background: linear-gradient(145deg, #8E44AD, #6C3483); box-shadow: 0 5px 15px rgba(142, 68, 173, 0.4);" onclick="startGame(7)">
+                    <h3>🧩 Encuentra la Pareja</h3>
+                    <p>Juego de memoria</p>
+                    <p>16 cartas • 8 emociones • Memory</p>
+                </button>
             </div>
         </div>
 
@@ -393,9 +524,13 @@
                     <div>Puntuación</div>
                     <div id="score">0</div>
                 </div>
-                <div class="score-item">
+                <div class="score-item" id="question-counter">
                     <div>Pregunta</div>
                     <div><span id="current-question">1</span>/<span id="total-questions">10</span></div>
+                </div>
+                <div class="score-item hidden" id="pairs-counter">
+                    <div>Parejas</div>
+                    <div><span id="found-pairs">0</span>/8</div>
                 </div>
                 <div class="score-item">
                     <div>Aciertos</div>
@@ -403,12 +538,17 @@
                 </div>
             </div>
 
-            <div class="progress-bar">
+            <div class="progress-bar" id="normal-progress">
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
             
-            <div class="face-container">
+            <div class="face-container" id="normal-game">
                 <img class="face" id="emotion-face" src="" alt="Emoción a identificar">
+            </div>
+            
+            <!-- Juego de memoria -->
+            <div class="memory-grid hidden" id="memory-game">
+                <!-- Las cartas se generarán dinámicamente -->
             </div>
             
             <div class="options" id="options">
@@ -492,7 +632,8 @@
             3: {name: "Avanzado", emotions: [15,16,17,18,19,20,21,22,23,24], options: 8, questions: 15},
             4: {name: "Experto", emotions: [25,26,27,28,29,30,31,32], options: 10, questions: 12},
             5: {name: "Científico", emotions: [33,34,35,36,37], options: 12, questions: 10},
-            6: {name: "Doble Cara", emotions: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37], options: 12, questions: 20, dualImages: true}
+            6: {name: "Doble Cara", emotions: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37], options: 12, questions: 20, dualImages: true},
+            7: {name: "Encuentra la Pareja", emotions: [1,2,3,4,5,6,7,8], memoryGame: true}
         };
 
         // Variables del juego
@@ -502,6 +643,12 @@
         let currentQuestion = 1;
         let correctAnswers = 0;
         let totalQuestions = 10;
+
+        // Variables para el juego de memoria
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let canFlip = true;
 
         // Función para obtener la imagen aleatoria de una emoción
         function getRandomEmotionImage(emotionId) {
@@ -525,14 +672,153 @@
             score = 0;
             currentQuestion = 1;
             correctAnswers = 0;
-            totalQuestions = LEVELS[level].questions;
             
             document.getElementById('menu-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             document.getElementById('game-over').classList.add('hidden');
             
-            updateUI();
-            generateQuestion();
+            if (LEVELS[level].memoryGame) {
+                startMemoryGame();
+            } else {
+                totalQuestions = LEVELS[level].questions;
+                updateUI();
+                generateQuestion();
+            }
+        }
+
+        // Funciones del juego de memoria
+        function startMemoryGame() {
+            // Resetear variables
+            memoryCards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            canFlip = true;
+            
+            // Ocultar elementos del juego normal
+            document.getElementById('normal-game').classList.add('hidden');
+            document.getElementById('normal-progress').classList.add('hidden');
+            document.getElementById('options').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('question-counter').classList.add('hidden');
+            
+            // Mostrar elementos del juego de memoria
+            document.getElementById('memory-game').classList.remove('hidden');
+            document.getElementById('pairs-counter').classList.remove('hidden');
+            
+            // Crear cartas
+            const emotions = LEVELS[currentLevel].emotions;
+            const cards = [];
+            
+            // Crear dos cartas por cada emoción (una de cada imagen)
+            emotions.forEach(emotionId => {
+                cards.push({
+                    id: emotionId,
+                    image: `${emotionId}.jpg`,
+                    name: EMOTIONS[emotionId].name
+                });
+                cards.push({
+                    id: emotionId,
+                    image: `${emotionId + 100}.jpg`,
+                    name: EMOTIONS[emotionId].name
+                });
+            });
+            
+            // Mezclar cartas
+            memoryCards = shuffleArray(cards);
+            
+            // Crear el grid
+            const memoryGrid = document.getElementById('memory-game');
+            memoryGrid.innerHTML = '';
+            
+            memoryCards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'memory-card';
+                cardElement.dataset.index = index;
+                cardElement.onclick = () => flipCard(index);
+                
+                cardElement.innerHTML = `
+                    <div class="card-back">🎭</div>
+                    <div class="card-front">
+                        <img class="card-image" src="${card.image}" alt="${card.name}">
+                        <div class="card-label">${card.name}</div>
+                    </div>
+                `;
+                
+                memoryGrid.appendChild(cardElement);
+            });
+            
+            updateMemoryUI();
+        }
+
+        function flipCard(index) {
+            if (!canFlip || flippedCards.length >= 2) return;
+            
+            const cardElement = document.querySelector(`[data-index="${index}"]`);
+            if (cardElement.classList.contains('flipped') || cardElement.classList.contains('matched')) return;
+            
+            // Voltear carta
+            cardElement.classList.add('flipped');
+            flippedCards.push(index);
+            
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                setTimeout(checkMatch, 1000);
+            }
+        }
+
+        function checkMatch() {
+            const [index1, index2] = flippedCards;
+            const card1 = memoryCards[index1];
+            const card2 = memoryCards[index2];
+            const element1 = document.querySelector(`[data-index="${index1}"]`);
+            const element2 = document.querySelector(`[data-index="${index2}"]`);
+            
+            if (card1.id === card2.id) {
+                // ¡Pareja encontrada!
+                element1.classList.add('matched');
+                element2.classList.add('matched');
+                matchedPairs++;
+                
+                // Mostrar popup de éxito
+                showMatchPopup(card1.name);
+                
+                // Puntuación
+                score += 50;
+                correctAnswers++;
+                
+                // Verificar si el juego terminó
+                if (matchedPairs === 8) {
+                    setTimeout(endGame, 2000);
+                }
+            } else {
+                // No coinciden, voltear de vuelta
+                setTimeout(() => {
+                    element1.classList.remove('flipped');
+                    element2.classList.remove('flipped');
+                }, 500);
+            }
+            
+            flippedCards = [];
+            canFlip = true;
+            updateMemoryUI();
+        }
+
+        function showMatchPopup(emotionName) {
+            const popup = document.createElement('div');
+            popup.className = 'match-popup';
+            popup.textContent = `¡Pareja encontrada! ${emotionName}`;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.remove();
+            }, 2000);
+        }
+
+        function updateMemoryUI() {
+            document.getElementById('current-level').textContent = `${currentLevel} - ${LEVELS[currentLevel].name}`;
+            document.getElementById('score').textContent = score;
+            document.getElementById('found-pairs').textContent = matchedPairs;
+            document.getElementById('correct-count').textContent = correctAnswers;
         }
 
         function generateQuestion() {
@@ -542,6 +828,12 @@
             }
 
             const levelConfig = LEVELS[currentLevel];
+            
+            // Si es juego de memoria, no usar esta función
+            if (levelConfig.memoryGame) {
+                return;
+            }
+            
             const availableEmotions = levelConfig.emotions;
             const selectedEmotionId = availableEmotions[Math.floor(Math.random() * availableEmotions.length)];
             
@@ -550,8 +842,22 @@
                 name: EMOTIONS[selectedEmotionId].name
             };
             
-            // Mostrar la imagen (ahora puede ser cualquiera de las dos versiones)
-            document.getElementById('emotion-face').src = getRandomEmotionImage(selectedEmotionId);
+            const faceContainer = document.getElementById('normal-game');
+            
+            // Si es el nivel de doble cara (nivel 6), mostrar ambas imágenes
+            if (levelConfig.dualImages) {
+                faceContainer.classList.add('dual');
+                faceContainer.innerHTML = `
+                    <img class="face dual-image" src="${selectedEmotionId}.jpg" alt="Emoción a identificar - Imagen 1">
+                    <img class="face dual-image" src="${selectedEmotionId + 100}.jpg" alt="Emoción a identificar - Imagen 2">
+                `;
+            } else {
+                // Nivel normal, una sola imagen aleatoria
+                faceContainer.classList.remove('dual');
+                faceContainer.innerHTML = `
+                    <img class="face" id="emotion-face" src="${getRandomEmotionImage(selectedEmotionId)}" alt="Emoción a identificar">
+                `;
+            }
             
             // Generar opciones
             const allEmotionsInLevel = availableEmotions.map(id => ({id, name: EMOTIONS[id].name}));
@@ -633,36 +939,55 @@
         function updateUI() {
             document.getElementById('current-level').textContent = `${currentLevel} - ${LEVELS[currentLevel].name}`;
             document.getElementById('score').textContent = score;
-            document.getElementById('current-question').textContent = currentQuestion;
-            document.getElementById('total-questions').textContent = totalQuestions;
-            document.getElementById('correct-count').textContent = correctAnswers;
             
-            // Actualizar barra de progreso
-            const progress = ((currentQuestion - 1) / totalQuestions) * 100;
-            document.getElementById('progress-fill').style.width = progress + '%';
+            if (!LEVELS[currentLevel].memoryGame) {
+                document.getElementById('current-question').textContent = currentQuestion;
+                document.getElementById('total-questions').textContent = totalQuestions;
+                document.getElementById('correct-count').textContent = correctAnswers;
+                
+                // Actualizar barra de progreso
+                const progress = ((currentQuestion - 1) / totalQuestions) * 100;
+                document.getElementById('progress-fill').style.width = progress + '%';
+            }
         }
 
         function endGame() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-over').classList.remove('hidden');
             
-            const percentage = (correctAnswers / totalQuestions) * 100;
-            
-            document.getElementById('final-score').innerHTML = 
-                `Puntuación final: <strong>${score}</strong> puntos<br>
-                Aciertos: ${correctAnswers}/${totalQuestions} (${percentage.toFixed(1)}%)`;
-            
+            let finalMessage = '';
             let performanceMessage = '';
-            if (percentage >= 90) {
-                performanceMessage = '🌟 ¡Excelente! Dominas el reconocimiento de emociones.';
-            } else if (percentage >= 75) {
-                performanceMessage = '👍 ¡Muy bien! Tienes grandes habilidades emocionales.';
-            } else if (percentage >= 60) {
-                performanceMessage = '💪 Bien hecho. Con práctica puedes mejorar aún más.';
+            
+            if (LEVELS[currentLevel].memoryGame) {
+                finalMessage = `Puntuación final: <strong>${score}</strong> puntos<br>
+                Parejas encontradas: ${matchedPairs}/8`;
+                
+                if (matchedPairs === 8) {
+                    performanceMessage = '🧩 ¡Perfecto! Has encontrado todas las parejas.';
+                } else if (matchedPairs >= 6) {
+                    performanceMessage = '👍 ¡Muy bien! Excelente memoria emocional.';
+                } else if (matchedPairs >= 4) {
+                    performanceMessage = '💪 Bien hecho. Con práctica mejorarás tu memoria.';
+                } else {
+                    performanceMessage = '🎯 Sigue practicando. La memoria mejora con el tiempo.';
+                }
             } else {
-                performanceMessage = '🎯 Sigue practicando. El reconocimiento mejora con el tiempo.';
+                const percentage = (correctAnswers / totalQuestions) * 100;
+                finalMessage = `Puntuación final: <strong>${score}</strong> puntos<br>
+                Aciertos: ${correctAnswers}/${totalQuestions} (${percentage.toFixed(1)}%)`;
+                
+                if (percentage >= 90) {
+                    performanceMessage = '🌟 ¡Excelente! Dominas el reconocimiento de emociones.';
+                } else if (percentage >= 75) {
+                    performanceMessage = '👍 ¡Muy bien! Tienes grandes habilidades emocionales.';
+                } else if (percentage >= 60) {
+                    performanceMessage = '💪 Bien hecho. Con práctica puedes mejorar aún más.';
+                } else {
+                    performanceMessage = '🎯 Sigue practicando. El reconocimiento mejora con el tiempo.';
+                }
             }
             
+            document.getElementById('final-score').innerHTML = finalMessage;
             document.getElementById('performance-message').textContent = performanceMessage;
         }
 
