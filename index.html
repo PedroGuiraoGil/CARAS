@@ -473,6 +473,13 @@
         let correctAnswers = 0;
         let totalQuestions = 10;
 
+        // Función para obtener la imagen aleatoria de una emoción
+        function getRandomEmotionImage(emotionId) {
+            // Elegir aleatoriamente entre la imagen original (ej: 7.jpg) y la alternativa (ej: 107.jpg)
+            const useAlternative = Math.random() < 0.5;
+            return useAlternative ? `${emotionId + 100}.jpg` : `${emotionId}.jpg`;
+        }
+
         // Funciones del juego
         function shuffleArray(array) {
             const newArray = [...array];
@@ -513,8 +520,8 @@
                 name: EMOTIONS[selectedEmotionId].name
             };
             
-            // Mostrar la imagen
-            document.getElementById('emotion-face').src = `${selectedEmotionId}.jpg`;
+            // Mostrar la imagen (ahora puede ser cualquiera de las dos versiones)
+            document.getElementById('emotion-face').src = getRandomEmotionImage(selectedEmotionId);
             
             // Generar opciones
             const allEmotionsInLevel = availableEmotions.map(id => ({id, name: EMOTIONS[id].name}));
