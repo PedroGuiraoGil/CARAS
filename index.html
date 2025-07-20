@@ -134,6 +134,14 @@
             perspective: 1000px;
         }
 
+        .face-container.dual {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         .face {
             max-width: 300px;
             width: 100%;
@@ -143,6 +151,11 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             transition: all 0.4s ease;
             animation: float 4s ease-in-out infinite;
+        }
+
+        .face.dual-image {
+            max-width: 250px;
+            height: 250px;
         }
 
         @keyframes float {
@@ -291,7 +304,7 @@
             box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4);
         }
 
-        @media (max-width: 768px) {
+            @media (max-width: 768px) {
             .game-container {
                 padding: 20px;
                 margin: 10px;
@@ -304,6 +317,16 @@
             .face {
                 max-width: 250px;
                 height: 250px;
+            }
+            
+            .face.dual-image {
+                max-width: 180px;
+                height: 180px;
+            }
+            
+            .face-container.dual {
+                flex-direction: column;
+                gap: 15px;
             }
         }
     </style>
@@ -349,6 +372,12 @@
                     <h3>🧬 Científico</h3>
                     <p>5 emociones de investigación</p>
                     <p>12 opciones • Nivel profesional</p>
+                </button>
+                
+                <button class="difficulty-btn" style="background: linear-gradient(145deg, #FF6B6B, #EE5A24); box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);" onclick="startGame(6)">
+                    <h3>🎭 Doble Cara</h3>
+                    <p>Todas las emociones</p>
+                    <p>2 imágenes • 12 opciones • Máximo reto</p>
                 </button>
             </div>
         </div>
@@ -462,7 +491,8 @@
             2: {name: "Intermedio", emotions: [7,8,9,10,11,12,13,14], options: 6, questions: 12},
             3: {name: "Avanzado", emotions: [15,16,17,18,19,20,21,22,23,24], options: 8, questions: 15},
             4: {name: "Experto", emotions: [25,26,27,28,29,30,31,32], options: 10, questions: 12},
-            5: {name: "Científico", emotions: [33,34,35,36,37], options: 12, questions: 10}
+            5: {name: "Científico", emotions: [33,34,35,36,37], options: 12, questions: 10},
+            6: {name: "Doble Cara", emotions: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37], options: 12, questions: 20, dualImages: true}
         };
 
         // Variables del juego
